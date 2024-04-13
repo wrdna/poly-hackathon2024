@@ -1,13 +1,14 @@
 import copy
-import opencv
+import cv2
+import numpy as np
 
 def main():
     size = 200 
 
-    b = readBoard('nuts.dat')
-    spos = getSquirrelPos(b, size)
-    fss = findSingles(b, size)
-    print(fss)
+    b = readBoardIntoImage('nuts.dat')
+    npb = np.array(b, dtype=np.uint8)
+    image = cv2.GaussianBlur(npb, (3, 3), 0)
+    print(image)
 
     #saveBoard(b, size)b
 # Create a N x N solved puzzle
@@ -16,6 +17,13 @@ def readBoard(filename):
     with open(filename, 'r') as f:
         for line in f.readlines()[3:]:
             board.append([*line])
+    return board
+
+def readBoardIntoImage(filename):
+    board = []
+    with open(filename, 'r') as f:
+        for line in f.readlines()[3:]:
+            board.append([0 if char in ['.', '@'] else char for char in line.strip()])
     return board
 
 # Get coordinates of squirrel
@@ -97,7 +105,7 @@ def makeMove(move, squirrelPos, holding, current_board):
         holding = False
     
 
-    return board, squirrelPos
+    return board, squirrelPos, holding
 
 if __name__ == "__main__":
     main()
